@@ -1,0 +1,702 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>[Hack092725] agent rules but for people</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(128, 125, 120, 1);
+	fill: rgba(128, 125, 120, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(204, 121, 47, 1);
+	fill: rgba(204, 121, 47, 1);
+}
+.highlight-yellow {
+	color: rgba(195, 148, 67, 1);
+	fill: rgba(195, 148, 67, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(63, 126, 190, 1);
+	fill: rgba(63, 126, 190, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(179, 84, 136, 1);
+	fill: rgba(179, 84, 136, 1);
+}
+.highlight-red {
+	color: rgba(201, 85, 73, 1);
+	fill: rgba(201, 85, 73, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 111, 200, 0.09);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(128, 125, 120, 1);
+	fill: rgba(128, 125, 120, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(204, 121, 47, 1);
+	fill: rgba(204, 121, 47, 1);
+}
+.block-color-yellow {
+	color: rgba(195, 148, 67, 1);
+	fill: rgba(195, 148, 67, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(63, 126, 190, 1);
+	fill: rgba(63, 126, 190, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(179, 84, 136, 1);
+	fill: rgba(179, 84, 136, 1);
+}
+.block-color-red {
+	color: rgba(201, 85, 73, 1);
+	fill: rgba(201, 85, 73, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(232, 242, 250, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 99, 174, 0.172); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="27b65510-3d8e-8033-969c-f57f2ebd16f4" class="page sans"><header><h1 class="page-title">[Hack092725] agent rules but for people</h1><p class="page-description"></p></header><div class="page-body"><ul id="27b65510-3d8e-80b6-bd17-e2f4191e8745" class="bulleted-list"><li style="list-style-type:disc">Coding agents like Claude and Codex have guidance files, e.g. <code>Claude.MD</code></li></ul><ul id="27b65510-3d8e-8003-8a6f-c23e5226ef94" class="bulleted-list"><li style="list-style-type:disc">We need the same for humans so we don’t ask stupid questions and actually learn from using AI-assisted tasks like coding</li></ul><ul id="27b65510-3d8e-807d-b175-da1e2b31667f" class="bulleted-list"><li style="list-style-type:disc">Prototype: Learnings for both Agents and Humans</li></ul><ul id="27b65510-3d8e-8052-abe9-f1ee02bf7bc8" class="bulleted-list"><li style="list-style-type:disc">Augmented Human-AI Interaction</li></ul><p id="27b65510-3d8e-8053-abd7-c34ad4b14ef9" class="">
+</p><h1 id="27b65510-3d8e-8047-b905-c25fda409885" class="">System Arch</h1><figure id="27b65510-3d8e-801a-992f-e9489b25e3a3" class="image"><a href="%5BHack092725%5D%20agent%20rules%20but%20for%20people%2027b655103d8e8033969cf57f2ebd16f4/Screenshot_2025-09-27_at_7.41.21_PM.png"><img style="width:710px" src="%5BHack092725%5D%20agent%20rules%20but%20for%20people%2027b655103d8e8033969cf57f2ebd16f4/Screenshot_2025-09-27_at_7.41.21_PM.png"/></a></figure><p id="27b65510-3d8e-801f-b0c1-d21b43800817" class="">
+</p><h1 id="27b65510-3d8e-8018-b121-cf748d774ac8" class="">Agent Roles</h1><p id="27b65510-3d8e-8052-9400-e4ef3c16dd74" class="">Knowledge Exchange agent</p><ul id="27b65510-3d8e-8044-96a1-e34ac8a5581b" class="bulleted-list"><li style="list-style-type:disc">Retrieving</li></ul><ul id="27b65510-3d8e-80ed-b09d-ffbf795e5109" class="bulleted-list"><li style="list-style-type:disc">Reprompting</li></ul><ul id="27b65510-3d8e-80c4-bb2d-f0454a7972c1" class="bulleted-list"><li style="list-style-type:disc">Synthesizing</li></ul><p id="27b65510-3d8e-80ab-8e6c-ef14d7dfdf89" class="">
+</p><p id="27b65510-3d8e-80f3-9ce5-f4e10b8e46ef" class="">Task Agent</p><ol type="1" id="27b65510-3d8e-80c0-b1cb-c0c2dba746ea" class="numbered-list" start="1"><li>executes and interfaces with user (produces assistant message)</li></ol><ol type="1" id="27b65510-3d8e-805e-8dc7-d253bae4ed5f" class="numbered-list" start="2"><li>accept new instructions (append to user message or assistant message)</li></ol><p id="27b65510-3d8e-8031-a545-d40f7bae34b3" class="">
+</p><h1 id="27b65510-3d8e-800e-995d-e3fd064edc5d" class="">User Flow</h1><h2 id="27b65510-3d8e-805f-bd28-dc9dd3e1e881" class="">First pass: objective is to capture learning gaps of user and assistant</h2><ol type="1" id="27b65510-3d8e-807d-9c30-dee97102c141" class="numbered-list" start="1"><li>&lt;session&gt;</li></ol><ol type="1" id="27b65510-3d8e-80a5-b3f6-d7295691af09" class="numbered-list" start="2"><li>User asks what &quot;UseEffect&quot; is in React</li></ol><ol type="1" id="27b65510-3d8e-8013-9b20-c715e8a5026b" class="numbered-list" start="3"><li>[Task Agent] Executes task</li></ol><ol type="1" id="27b65510-3d8e-80d9-8d09-dc2606430d94" class="numbered-list" start="4"><li>[KE Agent] Logs entry of user request to Documents</li></ol><ol type="1" id="27b65510-3d8e-80b0-9fb3-df61ed7c75f7" class="numbered-list" start="5"><li>System creates log entry of &quot;user actions&quot;</li></ol><ol type="1" id="27b65510-3d8e-804f-b72b-dfda11c5ed62" class="numbered-list" start="6"><li>[KE Agent] Request information learned from user action + documents. Write to  Documents</li></ol><ol type="1" id="27b65510-3d8e-80d8-a0c6-cd7e5484eace" class="numbered-list" start="7"><li>[KE Agent] Logs entry of Task Agent output into Documents</li></ol><ol type="1" id="27b65510-3d8e-8090-bbc2-fd73f15e2a12" class="numbered-list" start="8"><li>&lt;/session&gt;</li></ol><p id="27b65510-3d8e-8034-8876-d62611b17043" class="">
+</p><h2 id="27b65510-3d8e-802d-894c-ffc876d8c0a3" class="">Second pass: objective is to build faster with more knowledge</h2><ol type="1" id="27b65510-3d8e-8017-b6d3-d2e96c5c5447" class="numbered-list" start="1"><li>Session Starts with <code>learn mode</code> toggled on</li></ol><ol type="1" id="27b65510-3d8e-80c3-9b69-d66e74590cea" class="numbered-list" start="2"><li>User asks what &quot;UseEffect&quot; is in React FOR THE SECOND TIME</li></ol><ol type="1" id="27b65510-3d8e-80a3-8c45-cc1931bae5cd" class="numbered-list" start="3"><li>[KE Agent] Retrieves previous user documents</li></ol><ol type="1" id="27b65510-3d8e-80e0-9d83-e91d3a900c02" class="numbered-list" start="4"><li>[KE Agent] Reprompting task based on previous user documents</li></ol><ol type="1" id="27b65510-3d8e-8077-9611-f4affab02f71" class="numbered-list" start="5"><li>[Task Agent] Prompts human, &quot;here&#x27;s how we solved it last time, should we proceed&quot;? &lt; [producing some notion version of the markdown from step 3 &gt;</li></ol><ol type="1" id="27b65510-3d8e-8061-9a62-f5768c87d6be" class="numbered-list" start="6"><li>User approves &quot;plan&quot;</li></ol><ol type="1" id="27b65510-3d8e-803f-91a4-edcdc6e3496c" class="numbered-list" start="7"><li>[Task Agent] Executes task</li></ol><ol type="1" id="27b65510-3d8e-808b-bc8b-e6445426854e" class="numbered-list" start="8"><li>[KE Agent] Logs entry of user request to Documents</li></ol><ol type="1" id="27b65510-3d8e-8067-8daf-f0ce0d5233a2" class="numbered-list" start="9"><li>System creates log entry of &quot;user actions&quot;</li></ol><ol type="1" id="27b65510-3d8e-802a-a6d2-e78c67636bbd" class="numbered-list" start="10"><li>[KE Agent] Request information learned from user action + documents. Write to  Documents</li></ol><ol type="1" id="27b65510-3d8e-80a9-8129-fc7a6bf426d7" class="numbered-list" start="11"><li>[KE Agent] Logs entry of Task Agent output into Documents</li></ol><ol type="1" id="27b65510-3d8e-8015-bd17-ecefcf918570" class="numbered-list" start="12"><li>Session Ends</li></ol><p id="27b65510-3d8e-8096-9742-cb35376f86de" class="">
+</p><h1 id="27b65510-3d8e-80f3-ae01-d86a9839eaf9" class="">Implementation</h1><p id="27b65510-3d8e-8073-bbaf-c01bfa5097cf" class="">OpenAI Agents SDK will handle session id for every session</p><h2 id="27b65510-3d8e-80e9-ad58-d28e5cca0938" class="">Types of Documents: </h2><p id="27b65510-3d8e-80e1-8337-c456e35b5cb0" class="">1. user actions </p><p id="27b65510-3d8e-806a-99c8-eb460ae763dc" class="">2. synthesized learnings </p><p id="27b65510-3d8e-808c-919d-e50ec6b40254" class="">3. agent actions</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
