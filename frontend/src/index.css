@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: oklch(0.968 0.015 240.5);
+  --foreground: oklch(0.48 0.2 263.2);
+  --card: oklch(0.982 0.01 245.5);
+  --card-foreground: oklch(0.48 0.2 263.2);
+  --popover: oklch(0.982 0.01 245.5);
+  --popover-foreground: oklch(0.48 0.2 263.2);
+  --primary: oklch(0.5 0.25 265.4);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.01 247.6);
+  --secondary-foreground: oklch(0.48 0.2 263.2);
+  --muted: oklch(0.925 0.01 247.6);
+  --muted-foreground: oklch(0.43 0.17 262.5);
+  --accent: oklch(0.93 0.02 250.4);
+  --accent-foreground: oklch(0.5 0.25 265.4);
+  --destructive: oklch(0.63 0.19 23.03);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.5 0.25 265.4);
+  --input: oklch(0.5 0.25 265.4);
+  --ring: oklch(0.47 0.26 267.2);
+  --chart-1: oklch(0.5 0.25 265.4);
+  --chart-2: oklch(0.55 0.22 264.53);
+  --chart-3: oklch(0.72 0 0);
+  --chart-4: oklch(0.92 0 0);
+  --chart-5: oklch(0.56 0 0);
+  --sidebar: oklch(0.968 0.015 240.5);
+  --sidebar-foreground: oklch(0.48 0.2 263.2);
+  --sidebar-primary: oklch(0.5 0.25 265.4);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.93 0.02 250.4);
+  --sidebar-accent-foreground: oklch(0.5 0.25 265.4);
+  --sidebar-border: oklch(0.5 0.25 265.4);
+  --sidebar-ring: oklch(0.5 0.25 265.4);
+  --font-sans: 'Geist Mono', sans-serif;
+  --radius: 0rem;
+  --shadow-2xs: 4px 4px 0px 0px hsl(232 90% 55% / 0.08);
+  --shadow-xs: 4px 4px 0px 0px hsl(232 90% 55% / 0.08);
+  --shadow-sm: 4px 4px 0px 0px hsl(232 90% 55% / 0.15), 4px 1px 2px -1px hsl(232 90% 55% / 0.12);
+  --shadow: 4px 4px 0px 0px hsl(232 90% 55% / 0.16), 4px 1px 2px -1px hsl(232 90% 55% / 0.14);
+  --shadow-md: 4px 4px 0px 0px hsl(232 90% 55% / 0.18), 4px 2px 4px -1px hsl(232 90% 55% / 0.15);
+  --shadow-lg: 4px 4px 0px 0px hsl(232 90% 55% / 0.2), 4px 4px 6px -1px hsl(232 90% 55% / 0.18);
+  --shadow-xl: 4px 4px 0px 0px hsl(232 90% 55% / 0.22), 4px 8px 10px -1px hsl(232 90% 55% / 0.2);
+  --shadow-2xl: 4px 4px 0px 0px hsl(232 90% 55% / 0.4);
+}
+
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
