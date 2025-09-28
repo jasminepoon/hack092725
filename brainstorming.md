@@ -14,89 +14,77 @@ Developers using Codex to accomplish skills outside their expertise (e.g., build
 
 ## Core Components
 - **Session Recorder**: Hooks into conversation + tool usage, normalizes them into an event schema.
-- **Insight Engine**: Uses NLP/LLM prompts to tag gaps ("What is `useEffect`?"), confusion, successes, and follow-ups.
+- **Insight Engine**: Uses GPT‑5 prompts to tag gaps ("What is `useEffect`?"), confusion, successes, and follow-ups.
 - **Artifact Store**: Persists structured logs, summaries, and action plans with versioning/access controls.
 - **Review Console**: UI for timelines, key decisions, suggested learning, and reproducible playbooks.
 - **Context Injector**: Supplies relevant past insights to Codex when a new session begins.
 
 ## Prototype: Sub-Agent Notebook
-- Introduce a "notetaker" sub-agent sitting beside Codex.
+- Introduce a "notetaker" (Knowledge Exchange agent) beside Codex.
 - Each turn it records: what happened, where confusion appeared, and the takeaway for next time.
 - Entries append to a human-readable `learnings.md`, using a consistent template (turn ID, action, gap, outcome).
 - Periodic lightweight summaries keep the file digestible; older sessions archived on session end.
 - Codex and the developer read the latest notes before the next session, aligning on gaps and focus areas.
 
-## Integrity Discussion
-- Merkle trees would offer tamper-proof, shareable proofs but add complexity (canonical serialization, hash storage, tooling).
-- For the MVP, a simpler hash chain or plain version-controlled markdown is sufficient.
-- Escalate to Merkle-backed logs only if auditability or selective proof-sharing becomes a requirement.
+## Implementation Decisions (Jan 06)
+- Shared SQLite session memory lives at `documents/sessions.db`.
+- All summarization and augmentation calls use GPT‑5 for consistency.
+- Knowledge Exchange agent owns a `documents/<session_id>/` directory containing:
+  - `user_actions.jsonl`, `agent_actions.jsonl`, `augmented_turns.md`, and `learnings.md`.
+  - Raw turn data is append-only; markdown captures human-facing highlights.
+- Background logger streams task-agent tool calls and status updates back into the same document set for “constant logging + refresh.”
+
+## First Pass vs Second Pass
+- **First Pass (Gap Capture Mode)**
+  - Goal: record everything, identify skill gaps, and synthesize a session summary at close.
+  - Mechanics: task agent runs untouched; Knowledge Exchange agent logs user actions, agent actions, and a plain-language per-turn entry in `learnings.md`.
+  - End-of-session GPT‑5 summary adds timeline highlights, unresolved questions, and suggested next reps.
+- **Second Pass (Learn Mode)**
+  - Goal: reuse prior knowledge to move faster and close gaps.
+  - Before each turn, Knowledge Exchange agent retrieves the latest summary + relevant snippets and uses GPT‑5 to **augment/overwrite the user message** (mirroring the prompt-optimization cookbook pattern).
+  - Augmented prompt is both sent to the task agent and surfaced to the human in `augmented_turns.md`, showing original text, rewritten text, and diff.
+  - Human confirms the rewrite (accept/edit) before execution; once the task agent finishes, logs and markdown update in real time.
+  - Learn mode exits automatically once all tracked gaps are marked resolved or the user signals completion.
 
 ## Happy Path Walkthrough
-1. **Session 1**: Coder + AI build a React site; notetaker captures each exchange and synthesizes a `learnings.md` entry (timeline, gaps, next reps).
-2. **Between Sessions**: Notes are stored/versioned. Key findings include: needs more practice with hooks, deployment still theoretical.
-3. **Session 2**: Coder reviews the latest entry and states goals ("review `useEffect`, practice Netlify deploy"). Codex receives the same context and tailors help accordingly.
-4. **Execution**: Coder reimplements components with minimal prompting, deploys to Netlify, and closes remaining gaps.
-5. **Wrap-Up**: Notetaker marks hooks gap resolved, records deployment success, and proposes next reps (e.g., automate build).
+1. **Session 1 (First Pass)**: Coder + AI build a React site; Knowledge Exchange agent captures each exchange and synthesizes a `learnings.md` entry (timeline, gaps, next reps).
+2. **Between Sessions**: Notes and raw logs live in `documents/<session_id>/`; SQLite session memory preserves context for debugging.
+3. **Session 2 (Second Pass)**: Developer reviews the latest summary; Knowledge Exchange agent preloads context, rewrites the user message with reminders (“Here’s how we solved it last time”), and the human approves the plan.
+4. **Execution**: Task agent executes using the augmented prompt; background logger records tool usage.
+5. **Wrap-Up**: Knowledge Exchange agent updates markdown, marks gaps resolved, and suggests new repetitions (e.g., automate deployment).
 
 ## Flow Overview
 ```
-+----------------------+
-| Start Session        |
-+----------+-----------+
-           |
-           v
-+----------------------+        +----------------------+
-| Coder ↔ AI Exchange |<-------| Context from Previous |
-| (solve current task) |        | learnings.md          |
-+----------+-----------+        +----------------------+
-           |
-           v
-+----------------------+
-| Notetaker Captures   |
-| turn details         |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Session Ends         |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Synthesize new       |
-| learnings.md entry   |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Store & Version Log  |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Next Session Begins  |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Review notes;        |
-| adjust coaching      |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| Resume Exchange Loop |
-+----------------------+
++----------------------+      +-----------------------+
+| Frontend             |----->| Documents (SQLite +   |
+| (session start)      |      | markdown artifacts)   |
++----------+-----------+      +-----------+-----------+
+           |                             ^
+           v                             |
++----------------------+      constant logging & refresh
+| Knowledge Exchange   |-------------------------------+
+| agent (GPT-5)        |                               |
++----+-----------+-----+                               |
+     |           |                                     |
+ data |    augmented prompt                            |
+logging|           v                                   |
+     v        +-----------+----------------------------+
++------------+| Task Agent|                            |
+| Background |+-----------+                            |
+| Logger     |     ^                                    
++------------+     |                                    
+                   | confirmation                        
+                   +------------------------------------>
+                 Human user (views original vs augmented prompt)
 ```
 
 ## Open Questions
 - Exact schema for each turn (fields, tagging vocabulary, confidence scores?).
 - How and when to trigger summaries vs. raw log entries.
-- Privacy/governance requirements per organization; opt-in/export/delete flows.
-- Tooling for the notetaker (runs client-side? server-side? plug-in to Codex?).
+- Tooling footprint for the Knowledge Exchange agent (embedded in Codex vs. external service?).
 
 ## Next Steps
 1. Define developer personas/use cases to anchor requirements.
 2. Draft the `learnings.md` template and turn-level schema.
-3. Prototype the notetaker sub-agent (capture + synthesis) on a single session.
-4. Evaluate context-injection interfaces so Codex can consume prior insights safely.
+3. Prototype the Knowledge Exchange agent (capture + synthesis) on a single session.
+4. Evaluate context injection interfaces so Codex can consume prior insights safely.
