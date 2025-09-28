@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hack092725-agents-prototype"
+version = "0.1.0"
+description = "Hack092725 prototype built on the OpenAI Agents SDK"
+requires-python = ">=3.10"
+dependencies = [
+  "openai-agents",
+  "python-dotenv",
+]
+
+[project.optional-dependencies]
+viz = ["openai-agents[viz]"]
+voice = ["openai-agents[voice]"]
+dev = ["pytest"]
+
+[project.scripts]
+hack092725-agents = "app.cli:main"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+include = ["app*"]
