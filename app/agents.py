@@ -31,7 +31,7 @@ def build_task_agent(settings: PrototypeSettings) -> Agent:
         instructions=instructions,
         model=settings.default_model,
         tools=[get_recent_learnings],
-        model_settings=ModelSettings(temperature=0.2),
+        model_settings=ModelSettings(),
         input_guardrails=[enforce_scope_guardrail],
         output_guardrails=[ensure_actionable_response],
     )
@@ -54,7 +54,7 @@ def build_knowledge_exchange_agent(settings: PrototypeSettings) -> Agent:
         instructions=instructions,
         model=settings.default_model,
         tools=[log_user_request, log_agent_output, log_synthesised_learning],
-        model_settings=ModelSettings(temperature=0.3),
+        model_settings=ModelSettings(),
     )
 
 

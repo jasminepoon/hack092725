@@ -1,12 +1,21 @@
 """High-level orchestration of Task and Knowledge Exchange agents."""
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from agents import RunConfig, RunResult, Runner, trace
 
 from .agents import build_agents
+from .augmentation import (
+    AugmentationResult,
+    SessionRecap,
+    diff_prompts,
+    generate_augmented_prompt_async,
+    load_session_recap,
+    log_augmented_turn,
+)
 from .config import PrototypeSettings
 from .knowledge_store import KnowledgeStore
 from .session import PrototypeContext, SessionManager
@@ -19,10 +28,22 @@ class PlanPreview:
 
 
 @dataclass(slots=True)
+class AugmentationPreview:
+    original: str
+    suggestion: str
+    final_prompt: str
+    justification: List[str]
+    diff_original_suggestion: str
+    diff_original_final: str
+    raw_model_response: str
+
+
+@dataclass(slots=True)
 class PrototypeRun:
     task_result: RunResult
     knowledge_exchange_result: Optional[RunResult]
     digest: str
+    augmentation: Optional[AugmentationPreview]
 
 
 class PrototypeOrchestrator:
@@ -72,6 +93,29 @@ class PrototypeOrchestrator:
         session = self.session_manager.get(session_id)
         digest = self.knowledge_store.render_digest(session_id)
 
+        original_question = question
+        question_for_agent = question
+        augmentation_result: Optional[AugmentationResult] = None
+        augmentation_task: Optional[asyncio.Task[AugmentationResult]] = None
+        recap: Optional[SessionRecap] = None
+
+        if learn_mode:
+            recap = load_session_recap(self.knowledge_store, session_id)
+            if self.settings.has_api_key:
+                augmentation_task = asyncio.create_task(
+                    generate_augmented_prompt_async(
+                        original_question,
+                        recap,
+                        model=self.settings.default_model,
+                    )
+                )
+            else:
+                augmentation_result = AugmentationResult(
+                    rewritten_prompt=original_question,
+                    justification=["Augmentation skipped: no API key configured"],
+                    raw_text="",
+                )
+
         context = PrototypeContext(
             session_id=session_id,
             knowledge_store=self.knowledge_store,
@@ -79,11 +123,16 @@ class PrototypeOrchestrator:
             previous_learnings=[digest],
         )
 
+        if augmentation_task is not None:
+            augmentation_result = await augmentation_task
+        if augmentation_result is not None:
+            question_for_agent = augmentation_result.rewritten_prompt
+
         task_prompt_parts = [
             f"Session: {session_id}",
             digest,
             "User request:",
-            question,
+            question_for_agent,
         ]
         if learn_mode:
             task_prompt_parts.append(
@@ -109,9 +158,9 @@ class PrototypeOrchestrator:
             if synthesise_learning:
                 ke_prompt = (
                     "You are finishing a session."
-                    " Use your tools to (1) log the user request, (2) log the task output,"
-                    " (3) write a distilled learning with actionable next steps." \
-                    f"\n\nUser request:\n{question}\n\nTask agent output:\n{task_result.final_output}"
+                    " Use your tools to (1) log the final prompt that went to the task agent,"
+                    " (2) log the task output, (3) write a distilled learning with actionable next steps." \
+                    f"\n\nOriginal user request:\n{original_question}\n\nFinal prompt sent to task agent:\n{question_for_agent}\n\nTask agent output:\n{task_result.final_output}"
                 )
                 ke_context = PrototypeContext(
                     session_id=session_id,
@@ -125,7 +174,40 @@ class PrototypeOrchestrator:
                     run_config=run_config,
                 )
 
-        return PrototypeRun(task_result=task_result, knowledge_exchange_result=ke_result, digest=digest)
+        augmentation_preview: Optional[AugmentationPreview] = None
+        augmentation = augmentation_result
+        augmentation_preview: Optional[AugmentationPreview] = None
+
+        if learn_mode and augmentation is not None:
+            suggestion_diff = diff_prompts(original_question, augmentation.rewritten_prompt)
+            final_diff = diff_prompts(original_question, question_for_agent)
+            log_augmented_turn(
+                self.knowledge_store,
+                session_id,
+                original=original_question,
+                suggestion=augmentation.rewritten_prompt,
+                final_prompt=question_for_agent,
+                suggestion_diff=suggestion_diff,
+                final_diff=final_diff,
+                justification=augmentation.justification,
+                accepted=True,
+            )
+            augmentation_preview = AugmentationPreview(
+                original=original_question,
+                suggestion=augmentation.rewritten_prompt,
+                final_prompt=question_for_agent,
+                justification=augmentation.justification,
+                diff_original_suggestion=suggestion_diff,
+                diff_original_final=final_diff,
+                raw_model_response=augmentation.raw_text,
+            )
+
+        return PrototypeRun(
+            task_result=task_result,
+            knowledge_exchange_result=ke_result,
+            digest=digest,
+            augmentation=augmentation_preview,
+        )
 
 
-__all__ = ["PrototypeOrchestrator", "PrototypeRun", "PlanPreview"]
+__all__ = ["PrototypeOrchestrator", "PrototypeRun", "PlanPreview", "AugmentationPreview"]

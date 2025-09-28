@@ -45,7 +45,7 @@ def load_settings(env_path: Optional[Path] = None) -> PrototypeSettings:
 
     return PrototypeSettings(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
-        default_model=os.getenv("OPENAI_DEFAULT_MODEL", "gpt-4.1"),
+        default_model=os.getenv("OPENAI_DEFAULT_MODEL", "gpt-5-mini"),
         workflow_name=os.getenv("HACK092725_WORKFLOW_NAME", "Hack092725 Prototype"),
         data_root=root,
         session_db=session_db,
